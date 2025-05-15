@@ -184,6 +184,6 @@ def main():
 
     df_merged = merge_datasets.merge_datasets(df_demographics, gdp_results[0], pop_results[0])
     feature_engineering.feature_engineering(df_merged)
-
+    print("Done.")
 if __name__ == "__main__":
     main() 
