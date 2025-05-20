@@ -1,10 +1,17 @@
 import os
 import pandas as pd
-
+import numpy as np
 import demographics_crawler
 import cleaning_process
 import feature_engineering
 import merge_datasets
+
+
+def print_row_counts(before_df, after_df, dataset_name):
+    print(f"{dataset_name} Row Counts:")
+    print(f"  Before Cleaning: {before_df.shape[0]}")
+    print(f"  After Cleaning: {after_df.shape[0]}")
+    print("-" * 40)
 
 
 def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing=False):
@@ -176,13 +183,61 @@ def main():
 
     df_demographics, df_gdp, df_pop =  data_acquisition(file_name_demo, gdp_file, pop_file, printing=True)
 
+    # ----------------------- Print DataFrame Information -----------------------
+
+    def print_dataframe_info(df, dataset_name):
+        print(f"Dataset: {dataset_name}")
+        print("Shape:", df.shape)
+        print("Columns:", list(df.columns))
+        print("-" * 40)
+
+    # Assuming df_demographics, df_gdp, and df_pop are already loaded and cleaned.
+    print_dataframe_info(df_demographics, "Demographics")
+    print_dataframe_info(df_gdp, "GDP")
+    print_dataframe_info(df_pop, "Population")
+
+    # ----------------------- Demographics Data Analysis -------------------------
+
+    print("\nDemographics Data Analysis:")
+
+    # Identify numeric columns in the demographics dataset.
+    numeric_columns = df_demographics.select_dtypes(include=[np.number]).columns.tolist()
+
+    # For each numeric column, calculate and print descriptive statistics.
+    for col in numeric_columns:
+        mean_val = df_demographics[col].mean()
+        std_val = df_demographics[col].std()
+        min_val = df_demographics[col].min()
+        max_val = df_demographics[col].max()
+        median_val = df_demographics[col].median()
+        missing_val = df_demographics[col].isnull().sum()
+
+        print(f"\nStatistics for '{col}':")
+        print(f"  Mean               : {mean_val:.2f}")
+        print(f"  Standard Deviation : {std_val:.2f}")
+        print(f"  Minimum            : {min_val}")
+        print(f"  Maximum            : {max_val}")
+        print(f"  Median             : {median_val}")
+        print(f"  Missing Values     : {missing_val}")
+        print("-" * 30)
+
+    # Compute the Pearson correlation coefficient between LifeExpectancy Both and Population Density.
+    # Ensure the column names match exactly those in your DataFrame.
+    if "LifeExpectancy Both" in df_demographics.columns and "Population Density" in df_demographics.columns:
+        corr_value = df_demographics["LifeExpectancy Both"].corr(df_demographics["Population Density"])
+        print("\nPearson correlation coefficient between 'LifeExpectancy Both' and 'Population Density':", corr_value)
+    else:
+        print(
+            "\nOne or both columns ('LifeExpectancy Both', 'Population Density')"
+            " were not found in the demographics dataset.")
+
     print("Beginning Cleaning:")
-    df_demographics = cleaning_process.clean_demographics(df_demographics)
+    df_demographics_cleaned = cleaning_process.clean_demographics(df_demographics)
     gdp_results = cleaning_process.process_gdp_data(df_gdp)
     pop_results = cleaning_process.process_population_data(df_pop)
 
     print("Merging Datasets:")
-    df_merged = merge_datasets.merge_datasets(df_demographics, gdp_results[0], pop_results[0])
+    df_merged = merge_datasets.merge_datasets(df_demographics_cleaned, gdp_results[0], pop_results[0])
     print("Performing Feature Engineering:")
     feature_engineering.feature_engineering(df_merged)
     print("Done.")

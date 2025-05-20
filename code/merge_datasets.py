@@ -2,11 +2,36 @@ import os
 import numpy as np
 import pandas as pd
 
+
 def merge_datasets(df_demo, df_gdp, df_pop):
+    # Define a dictionary mapping alternate country names to their canonical form.
+    country_mapping = {
+        "Cape Verde": "Cabo Verde",
+        "Côte d'Ivoire": "Cote d'Ivoire",
+        "Dr Congo": "Democratic Republic Of Congo",
+        "Faeroe Islands": "Faroe Islands",
+        "Micronesia (Country)": "Micronesia",
+        "Réunion": "Reunion",
+        "Sao Tome & Principe": "Sao Tome And Principe",
+        "Palestine": "State Of Palestine",
+        "U.S. Virgin Islands": "United States Virgin Islands",
+        # Add other mappings here as necessary.
+    }
+
+    # Function to apply the mapping after stripping whitespace.
+    def clean_country(name):
+        name = name.strip()
+        return country_mapping.get(name, name)
+
     # Ensure that all DataFrames have a "Country" column.
-    for df, name in zip([df_demo, df_gdp, df_pop],["demographics", "GDP", "population"]):
+    for df, name in zip([df_demo, df_gdp, df_pop], ["demographics", "GDP", "population"]):
         if 'Country' not in df.columns:
             raise KeyError(f"'Country' column not found in {name} dataset.")
+
+    # Apply country name canonicalization to each DataFrame.
+    df_demo["Country"] = df_demo["Country"].apply(clean_country)
+    df_gdp["Country"] = df_gdp["Country"].apply(clean_country)
+    df_pop["Country"] = df_pop["Country"].apply(clean_country)
 
     # (a) Set the "Country" column as the index in each DataFrame.
     df_demo.set_index("Country", inplace=True)
@@ -53,7 +78,7 @@ def merge_datasets(df_demo, df_gdp, df_pop):
     df_merged.dropna(subset=categorical_cols, inplace=True)
 
     # (f) Build the final feature matrix.
-    # Define the selected scaled features. Adjust this list as needed.
+    # Define the selected features (adjust as needed).
     selected_features = ["LifeExpectancy Both", "Log_Population"]
     for col in selected_features:
         if col not in df_merged.columns:
@@ -75,11 +100,11 @@ def merge_datasets(df_demo, df_gdp, df_pop):
 
     return df_merged
 
+
 # Example usage (if running this file directly):
 if __name__ == "__main__":
-    # Suppose you load your CSVs into df_demo, df_gdp, and df_pop here.
-    # For instance:
+    # Load your CSV files into DataFrames.
     df_demo = pd.read_csv("../code/demographics_data.csv")
-    df_gdp  = pd.read_csv("../code/gdp_per_capita_2021.csv", na_values=["None"])
-    df_pop  = pd.read_csv("../code/population_2021.csv", na_values=["None"])
+    df_gdp = pd.read_csv("../code/gdp_per_capita_2021.csv", na_values=["None"])
+    df_pop = pd.read_csv("../code/population_2021.csv", na_values=["None"])
     merge_datasets(df_demo, df_gdp, df_pop)
