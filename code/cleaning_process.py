@@ -103,7 +103,7 @@ def process_gdp_data(df_gdp, output_dir='output'):
     return df_gdp, outliers, missing_gdp, duplicates
 
 
-def process_population_data(df_pop, output_dir='output'):
+def process_population_data(df_pop, output_dir='../output'):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 

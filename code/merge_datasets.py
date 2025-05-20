@@ -100,11 +100,3 @@ def merge_datasets(df_demo, df_gdp, df_pop):
 
     return df_merged
 
-
-# Example usage (if running this file directly):
-if __name__ == "__main__":
-    # Load your CSV files into DataFrames.
-    df_demo = pd.read_csv("../code/demographics_data.csv")
-    df_gdp = pd.read_csv("../code/gdp_per_capita_2021.csv", na_values=["None"])
-    df_pop = pd.read_csv("../code/population_2021.csv", na_values=["None"])
-    merge_datasets(df_demo, df_gdp, df_pop)

@@ -5,6 +5,7 @@ import demographics_crawler
 import cleaning_process
 import feature_engineering
 import merge_datasets
+# import analysis_module
 
 
 def print_row_counts(before_df, after_df, dataset_name):
@@ -236,10 +237,20 @@ def main():
     gdp_results = cleaning_process.process_gdp_data(df_gdp)
     pop_results = cleaning_process.process_population_data(df_pop)
 
+    print_row_counts(df_demographics, df_demographics_cleaned, "Demographics")
+    print_row_counts(df_gdp, gdp_results[0], "GDP")
+    print_row_counts(df_pop, pop_results[0], "Population")
+
     print("Merging Datasets:")
     df_merged = merge_datasets.merge_datasets(df_demographics_cleaned, gdp_results[0], pop_results[0])
+
+
+
     print("Performing Feature Engineering:")
     feature_engineering.feature_engineering(df_merged)
+
+    # analysis_module.generate_feature_engineering_summary(df_merged, df_demographics)
+
     print("Done.")
 
 if __name__ == "__main__":
