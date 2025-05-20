@@ -54,6 +54,7 @@ def generate_feature_engineering_summary(df_merged, df_demographics):
     df_demographics.head(5).to_csv(demo_sample_file, index=False)
     print("Sample of demographics data (first 5 rows) saved to:", demo_sample_file)
 
+
     # 5. Verification of additional fields from the web crawling process.
     required_fields = [
         "LifeExpectancy Both", "LifeExpectancy Female", "LifeExpectancy Male",
