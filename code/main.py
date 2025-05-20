@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-import demographic_crawler
+import demographics_crawler
 import cleaning_process
 import feature_engineering
 import merge_datasets
@@ -18,9 +18,9 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
 
     # List of numeric columns to be cast. Adjust the column names if needed.
     numeric_columns = [
-        "Life Expectancy (Both Sexes, in years)",
-        "Life Expectancy (Females) in years",
-        "Life Expectancy (Males) in years",
+        "LifeExpectancy (Both Sexes, in years)",
+        "LifeExpectancy (Females) in years",
+        "LifeExpectancy (Males) in years",
         "Urban Population percentage",
         "Urban Population absolute numbers",
         "Population Density per square kilometer"
@@ -79,12 +79,11 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
         print(df_pop.head())
 
     # (c) Ensure numeric types for the GDP and Population columns.
-    # Adjust the column names if needed.
-    if "GDP" in df_gdp.columns:
-        df_gdp["GDP"] = pd.to_numeric(df_gdp["GDP"], errors="coerce")
+    if "GDP_per_capita_PPP" in df_gdp.columns:
+        df_gdp["GDP_per_capita_PPP"] = pd.to_numeric(df_gdp["GDP_per_capita_PPP"], errors="coerce")
     else:
         if printing:
-            print("Warning: 'GDP' column not found in df_gdp.")
+            print("Warning: 'GDP_per_capita_PPP' column not found in df_gdp.")
 
     if "Population" in df_pop.columns:
         df_pop["Population"] = pd.to_numeric(df_pop["Population"], errors="coerce")
@@ -94,7 +93,7 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
 
     # (d) Print and save the first 5 rows BEFORE sorting GDP and Population DataFrames
     gdp_before_sort = df_gdp.head(5)
-    gdp_before_sort_path = os.path.join(output_dir, "gdp before sort.csv")
+    gdp_before_sort_path = os.path.join(output_dir, "gdp_before_sort.csv")
     gdp_before_sort.to_csv(gdp_before_sort_path, index=False)
     if printing:
         print("\nGDP DataFrame - BEFORE sorting (first 5 rows):")
@@ -102,7 +101,7 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
         print(f"Saved to {gdp_before_sort_path}")
 
     pop_before_sort = df_pop.head(5)
-    pop_before_sort_path = os.path.join(output_dir, "pop before sort.csv")
+    pop_before_sort_path = os.path.join(output_dir, "pop_before_sort.csv")
     pop_before_sort.to_csv(pop_before_sort_path, index=False)
     if printing:
         print("\nPopulation DataFrame - BEFORE sorting (first 5 rows):")
@@ -126,7 +125,7 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
 
     # Print and save the first 5 rows AFTER sorting GDP and Population DataFrames
     gdp_after_sort = df_gdp_sorted.head(5)
-    gdp_after_sort_path = os.path.join(output_dir, "gdp after sort.csv")
+    gdp_after_sort_path = os.path.join(output_dir, "gdp_after_sort.csv")
     gdp_after_sort.to_csv(gdp_after_sort_path, index=False)
     if printing:
         print("\nGDP DataFrame - AFTER sorting by 'Country' (first 5 rows):")
@@ -134,7 +133,7 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
         print(f"Saved to {gdp_after_sort_path}")
 
     pop_after_sort = df_pop_sorted.head(5)
-    pop_after_sort_path = os.path.join(output_dir, "pop after sort.csv")
+    pop_after_sort_path = os.path.join(output_dir, "pop_after_sort.csv")
     pop_after_sort.to_csv(pop_after_sort_path, index=False)
     if printing:
         print("\nPopulation DataFrame - AFTER sorting by 'Country' (first 5 rows):")
@@ -143,7 +142,7 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
 
     # (e) Run describe() on both DataFrames and save the resulting tables.
     gdp_describe = df_gdp.describe()
-    gdp_describe_path = os.path.join(output_dir, "gdp describe.csv")
+    gdp_describe_path = os.path.join(output_dir, "gdp_describe.csv")
     gdp_describe.to_csv(gdp_describe_path)
     if printing:
         print("\nGDP DataFrame - Describe():")
@@ -151,7 +150,7 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
         print(f"Saved to {gdp_describe_path}")
 
     pop_describe = df_pop.describe()
-    pop_describe_path = os.path.join(output_dir, "pop describe.csv")
+    pop_describe_path = os.path.join(output_dir, "pop_describe.csv")
     pop_describe.to_csv(pop_describe_path)
     if printing:
         print("\nPopulation DataFrame - Describe():")
@@ -163,27 +162,30 @@ def data_acquisition(filename_demographics, filename_gdp, filename_pop, printing
 
 
 def main():
-    file_name_demo = "code/demographics_data.csv"
-    gdp_file = "code/gdp_per_capita_2021.csv"
-    pop_file = "code/population_2021.csv"
+    file_name_demo = "./demographics_data.csv"
+    gdp_file = "./gdp_per_capita_2021.csv"
+    pop_file = "./population_2021.csv"
 
     # demographic_crawler.retrieve_data(file_name_demo)
 
     # Crawling our way to the data
     if not os.path.exists(file_name_demo):
-        demographic_crawler.retrieve_data(file_name_demo)
+        demographics_crawler.retrieve_data(file_name_demo)
     else:
         print("File already exists. Skipping the crawling.")
 
     df_demographics, df_gdp, df_pop =  data_acquisition(file_name_demo, gdp_file, pop_file, printing=True)
 
-
+    print("Beginning Cleaning:")
     df_demographics = cleaning_process.clean_demographics(df_demographics)
     gdp_results = cleaning_process.process_gdp_data(df_gdp)
     pop_results = cleaning_process.process_population_data(df_pop)
 
+    print("Merging Datasets:")
     df_merged = merge_datasets.merge_datasets(df_demographics, gdp_results[0], pop_results[0])
+    print("Performing Feature Engineering:")
     feature_engineering.feature_engineering(df_merged)
     print("Done.")
+
 if __name__ == "__main__":
     main() 

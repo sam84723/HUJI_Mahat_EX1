@@ -4,9 +4,7 @@ import pandas as pd
 
 
 def feature_engineering(df):
-    # Input file (merged and cleaned by your partner) and output directory:
-
-
+    output_dir = "../output"
     # ---------------------- 5.1 New Feature: Total GDP ----------------------
     # Ensure the required columns exist
     required_cols = ["GDP_per_capita_PPP", "Population"]
@@ -36,7 +34,7 @@ def feature_engineering(df):
 
     # ---------------------- 5.3 Scaling (Z-score Normalization) ----------------------
     # Define the three columns to normalize.
-    features_to_normalize = ["Life Expectancy Both", "LogGDPperCapita", "LogPopulation"]
+    features_to_normalize = ["LifeExpectancy Both", "LogGDPperCapita", "LogPopulation"]
     # Check that these columns exist.
     for col in features_to_normalize:
         if col not in df.columns:

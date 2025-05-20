@@ -45,9 +45,9 @@ def find_exact_label(soup, keyword):
 
 def get_life_expectancy_values(soup):
     """
-    A function that gets the life expectancy values from a BeautifulSoup object
+    A function that gets the LifeExpectancy values from a BeautifulSoup object
     :param soup: the BeautifulSoup object
-    :return: the life expectancy value
+    :return: the LifeExpectancy value
     """
     def find_value_by_exact_label(keyword):
         target_div = find_exact_label(soup, keyword)
@@ -108,9 +108,9 @@ def extract_country_data(country_name, url):
 
     return {
         "Country": country_name,
-        "Life Expectancy Both": val_both,
-        "Life Expectancy Female": val_female,
-        "Life Expectancy Male": val_male,
+        "LifeExpectancy Both": val_both,
+        "LifeExpectancy Female": val_female,
+        "LifeExpectancy Male": val_male,
         "UrbanPopulation Percentage": urban_percentage,
         "UrbanPopulation Absolute": urban_absolute,
         "Population Density": pop_density
@@ -143,7 +143,7 @@ def retrieve_data(file_name):
 
     with open(file_name, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=[
-            "Country", "Life Expectancy Both", "Life Expectancy Female", "Life Expectancy Male",
+            "Country", "LifeExpectancy Both", "LifeExpectancy Female", "LifeExpectancy Male",
             "UrbanPopulation Percentage", "UrbanPopulation Absolute", "Population Density"
         ])
         writer.writeheader()

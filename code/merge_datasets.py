@@ -31,7 +31,7 @@ def merge_datasets(df_demo, df_gdp, df_pop):
     lost_countries = sorted(list(all_countries - merged_countries))
     output_dir = "../output"
     os.makedirs(output_dir, exist_ok=True)
-    lost_countries_file = os.path.join(output_dir, "lost countries.csv")
+    lost_countries_file = os.path.join(output_dir, "lost_countries.csv")
     pd.DataFrame({"Country": lost_countries}).to_csv(lost_countries_file, index=False)
     print("Lost countries saved to:", lost_countries_file)
 
@@ -54,7 +54,7 @@ def merge_datasets(df_demo, df_gdp, df_pop):
 
     # (f) Build the final feature matrix.
     # Define the selected scaled features. Adjust this list as needed.
-    selected_features = ["Life Expectancy Both", "Log_Population"]
+    selected_features = ["LifeExpectancy Both", "Log_Population"]
     for col in selected_features:
         if col not in df_merged.columns:
             raise KeyError(f"Column '{col}' not found in the merged dataset.")

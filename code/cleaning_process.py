@@ -3,17 +3,27 @@ import os
 
 import numpy as np
 import pandas as pd
+import unicodedata
+
+def remove_special_chars(text):
+    # Normalize the string to decompose combined characters
+    normalized_text = unicodedata.normalize('NFKD', text)
+    # Encode to ASCII bytes, ignoring characters that can't be encoded, then decode back to string
+    ascii_text = normalized_text.encode('ascii', 'ignore').decode('ascii')
+    return ascii_text
 
 
 def normalize_country(name):
     name = name.strip()  # remove surrounding spaces
-    if name.lower().startswith("the "):
+    if name.lower().startswith("the ") or name.lower().startswith("The "):
         name = name[4:]  # remove "the "
+    name = remove_special_chars(name)
+    name = name.lower()
     return name.title()
 
 
 def clean_demographics(df, printing=False):
-    cols_to_clean = ['Life Expectancy Both', 'Life Expectancy Female', 'Life Expectancy Male',
+    cols_to_clean = ['LifeExpectancy Both', 'LifeExpectancy Female', 'LifeExpectancy Male',
                      'UrbanPopulation Percentage', 'UrbanPopulation Absolute', 'Population Density']
 
     for col in cols_to_clean:
@@ -24,9 +34,9 @@ def clean_demographics(df, printing=False):
     df = df.dropna(subset=cols_to_clean)
 
     # Getting rid of the negative values and the ones out of bounds (40-100)
-    df = df[(df['Life Expectancy Both'] >= 40) & (df['Life Expectancy Both'] <= 100)]
-    df = df[(df['Life Expectancy Female'] >= 40) & (df['Life Expectancy Female'] <= 100)]
-    df = df[(df['Life Expectancy Male'] >= 40) & (df['Life Expectancy Male'] <= 100)]
+    df = df[(df['LifeExpectancy Both'] >= 40) & (df['LifeExpectancy Both'] <= 100)]
+    df = df[(df['LifeExpectancy Female'] >= 40) & (df['LifeExpectancy Female'] <= 100)]
+    df = df[(df['LifeExpectancy Male'] >= 40) & (df['LifeExpectancy Male'] <= 100)]
 
     # Dealing with the name shit
     df['Original_Country'] = df['Country']

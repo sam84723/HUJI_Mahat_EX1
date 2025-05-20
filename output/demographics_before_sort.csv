@@ -1,4 +1,4 @@
-Country,Life Expectancy Both,Life Expectancy Female,Life Expectancy Male,UrbanPopulation Percentage,UrbanPopulation Absolute,Population Density
+Country,LifeExpectancy Both,LifeExpectancy Female,LifeExpectancy Male,UrbanPopulation Percentage,UrbanPopulation Absolute,Population Density
 Afghanistan,66.5,68.1,64.9,26.7,11704638,67
 Albania,80.0,81.7,78.1,70.3,1948831,101
 Algeria,76.7,78.1,75.3,74.4,35291973,20
